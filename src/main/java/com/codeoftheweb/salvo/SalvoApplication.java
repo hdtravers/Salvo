@@ -134,7 +134,6 @@ public class SalvoApplication {
 				return PasswordEncoderFactories.createDelegatingPasswordEncoder();
 			}
 
-
 			@Override
 			public void init(AuthenticationManagerBuilder auth) throws Exception {
 				auth.userDetailsService(inputPlayer-> {
