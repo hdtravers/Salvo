@@ -18,15 +18,23 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.WebAttributes;
+import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 
 @SpringBootApplication
 public class SalvoApplication {
+
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
 	public static void main(String[] args) {
 		SpringApplication.run(SalvoApplication.class, args);
@@ -36,20 +44,19 @@ public class SalvoApplication {
 	@Bean
 	public CommandLineRunner initData(PlayerRepository repository, GameRepository gameRepository, GamePlayerRepository gamePlayerRepository, ScoreRepository scoreRepository) {
 		return (args) -> {
+
 			// save a couple of customers
-			Player player1 = new Player("j.bauer@ctu.gov", "24");
-			Player player2 = new Player("c.obrian@ctu.gov", "42");
-			Player player3 = new Player("kim_bauer@gmail.com", "kb");
-			Player player4 = new Player("t.almeida@ctu.gov", "mole");
-			Player player5 = new Player("d.palmer@whitehouse.gov", "fuck");
+			Player player1 = new Player("j.bauer@ctu.gov", passwordEncoder.encode("24"));
+			Player player2 = new Player("c.obrian@ctu.gov", passwordEncoder.encode("42"));
+			Player player3 = new Player("kim_bauer@gmail.com", passwordEncoder.encode("kb"));
+			Player player4 = new Player("t.almeida@ctu.gov", passwordEncoder.encode("mole"));
+			Player player5 = new Player("d.palmer@whitehouse.gov",passwordEncoder.encode( "fuck"));
 
 
 			Game game1 = new Game(LocalDateTime.now());
 			Game game2 = new Game(LocalDateTime.now().plusHours(1));
 			Game game3 = new Game(LocalDateTime.now().plusHours(2));
-			Game game4 = new Game(LocalDateTime.now().plusHours(3));
-			Game game5 = new Game(LocalDateTime.now().plusHours(4));
-			Game game6 = new Game(LocalDateTime.now().plusHours(5));
+
 
 
 			repository.save(player1);
@@ -60,9 +67,7 @@ public class SalvoApplication {
 			gameRepository.save(game1);
 			gameRepository.save(game2);
 			gameRepository.save(game3);
-			gameRepository.save(game4);
-			gameRepository.save(game5);
-			gameRepository.save(game6);
+
 
 
 			Score score1 = new Score(player1, game1, 0.5);
@@ -83,6 +88,8 @@ public class SalvoApplication {
 			GamePlayer gamePlayer3 = new GamePlayer(game2, player3);
 
 			GamePlayer gamePlayer4 = new GamePlayer(game2, player4);
+
+			GamePlayer gamePlayer5 = new GamePlayer(game3, player4);
 
 			Ship ship1 = new Ship("destructor", Arrays.asList("A2", "A3", "A4"));
 			Ship ship2 = new Ship("submarino", Arrays.asList("H2", "H3", "H4", "H5", "H6"));
@@ -120,6 +127,7 @@ public class SalvoApplication {
 			gamePlayerRepository.save(gamePlayer2);
 			gamePlayerRepository.save(gamePlayer3);
 			gamePlayerRepository.save(gamePlayer4);
+			gamePlayerRepository.save(gamePlayer5);
 
 		};
 	}
@@ -154,19 +162,44 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
-				.antMatchers("/admin/**").hasAuthority("ADMIN")
-				.antMatchers("/**").hasAuthority("USER")
+				.antMatchers("/web/game","/api/game_view/**").hasAuthority("USER")
+				.antMatchers("/**").permitAll()
 				.and()
 				.formLogin();
 
 		http.formLogin()
 				.usernameParameter("userName")
 				.passwordParameter("password")
-				.loginPage("/app/login");
+				.loginPage("/api/login");
 
-		http.logout().logoutUrl("/app/logout");
+		http.logout().logoutUrl("/api/logout");
+
+		http.csrf().disable();
+
+		// if user is not authenticated, just send an authentication failure response
+		http.exceptionHandling().authenticationEntryPoint((req, res, exc) -> res.sendError(HttpServletResponse.SC_UNAUTHORIZED));
+
+		// if login is successful, just clear the flags asking for authentication
+		http.formLogin().successHandler((req, res, auth) -> clearAuthenticationAttributes(req));
+
+		// if login fails, just send an authentication failure response
+		http.formLogin().failureHandler((req, res, exc) -> res.sendError(HttpServletResponse.SC_UNAUTHORIZED));
+
+		// if logout is successful, just send a success response
+		http.logout().logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler());
 	}
-}
+
+	private void clearAuthenticationAttributes(HttpServletRequest request) {
+		HttpSession session = request.getSession(false);
+		if (session != null) {
+			session.removeAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
+		}
+	}
+
+
+
+	}
+
 
 
 

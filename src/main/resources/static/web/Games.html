@@ -1,42 +1,86 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:v-model="http://www.w3.org/1999/xhtml">
+
 <head>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <meta charset="UTF-8">
     <title>Games</title>
 </head>
+
 <body>
-<div class="container" id="app">
-<h1>Games</h1>
-    <p> See games! </p>
+    <div class="container" id="app">
+        <h1>Games</h1>
+        
+        
 
-        <table class="table table-bordered">
-            <thead>
-            <tr>
-                <th>Players</th>
-                <th>Total Score</th>
-                <th>Number of Wins</th>
-                <th>Number of Losses</th>
-                <th>Number of Ties</th>
+        <div class="float-left">
+            <p> See games! </p>
+            <ol class="">
+                <li v-for="game in games">
+                 {{game.created}}
+                    <button v-on:click="unirse(game.id)" v-if="game.gamePlayers.length <2 && playerLog !=null && playerLog.userName !=game.gamePlayers[0].player.userName "  type="button" class="btn btn-outline-primary btn-xs">Unirse</button>
 
-            </tr>
-            </thead>
-            <tbody>
-            <tr v-for="score in scores" scope="player">
-                <td>{{score.player}} </td>
-                <td>{{score.nTotal}}</td>
-                <td>{{score.nWins}}</td>
-                <td>{{score.nLoss}}</td>
-                <td>{{score.nTies}}</td>
-            </tr>
-            </tbody>
-        </table>
-   </div>
+                    <ul v-for="gamePlayer in game.gamePlayers">
+                        <li>{{gamePlayer.player.userName}}
+                        <a v-if="playerLog !=null && playerLog.userName == gamePlayer.player.userName" 
+                           v-bind:href="'http://localhost:8080/web/Game.html?Gp='+gamePlayer.id"><button class="btn btn-outline-primary btn-xs">reingresar</button></a></li>
+                    </ul>
+                </li>
+            </ol>
+        </div>
+                
+                    <div v-if="playerLog ==null" class="float-right">
+                        <form class="">
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">Email address</label>
+                                <input v-model:value="emailLogeado" type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                                <small id="emailHelp" class="form-text text-muted"></small>
+                            </div>
+                            <div class="form-group">
+                                <label for="exampleInputPassword1">Password</label>
+                                <input v-model:value="passLogeado" type="password" class="form-control" id="exampleInputPassword1">
+                            </div>
+                            <div>
+                                <button v-on:click="login" type="button" class="btn btn-primary">Login</button>
+                                <button v-on:click="signUp" type="button" class="btn btn-primary float-right">Sign Up</button>
+                            </div>  
+                        </form>
+                    </div>
+                
 
-<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
-<script src="js/games.js"></script>
+                    <div v-else class="col-9">
+                        <button v-on:click="logout" type="button" class="btn btn-outline-primary float-right">Logout</button>  
+                        <button v-on:click="create()" type="button" class="btn btn-outline-primary float-right">Create</button>
+                    </div>
+            <table class="table table-bordered"class="col-4" >
+                <thead>
+                    <tr>
+                        <th>Players</th>
+                        <th>Total Score</th>
+                        <th>Number of Wins</th>
+                        <th>Number of Losses</th>
+                        <th>Number of Ties</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="score in scores" scope="player">
+                        <td>{{score.player}} </td>
+                        <td>{{score.nTotal}}</td>
+                        <td>{{score.nWins}}</td>
+                        <td>{{score.nLoss}}</td>
+                        <td>{{score.nTies}}</td>
+                    </tr>
+                </tbody>
+            </table>
+    </div>
+    
+
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+        <script src="js/games.js"></script>
 </body>
+
+
 </html>

@@ -39,7 +39,7 @@ public class Player {
     }
 
     public Score getScore(Game game){
-        Score playerScore =  scores.stream().filter(score -> score.getGame().equals(game)).findFirst().orElse(null);
+        Score playerScore =  scores.stream().filter(score -> score.getGame().getId()==game.getId()).findFirst().orElse(null);
         return playerScore;
     }
 
