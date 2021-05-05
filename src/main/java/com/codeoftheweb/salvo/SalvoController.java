@@ -10,10 +10,7 @@ package com.codeoftheweb.salvo;
         import org.springframework.web.bind.annotation.*;
 
         import java.time.LocalDateTime;
-        import java.util.HashMap;
-        import java.util.LinkedHashMap;
-        import java.util.List;
-        import java.util.Map;
+        import java.util.*;
         import java.util.stream.Collectors;
 
         import static java.util.stream.Collectors.reducing;
@@ -123,6 +120,35 @@ public class SalvoController {
             }
         }
         return response;
+    }
+    @PostMapping("games/players/{gamePlayerId}/ships")
+    public ResponseEntity<Map<String, Object>> saveShips(Authentication authentication, @PathVariable long gamePlayerId, @RequestBody List<Ship> ships) {
+        if (isGuest(authentication)) {
+            return new ResponseEntity<>(makeMap("error", "You have to logged in."), HttpStatus.UNAUTHORIZED);
+
+        } else {
+            Optional<GamePlayer> gamePlayer = gamePlayerRepository.findById(gamePlayerId);
+            Player player = playerRepository.findByUserName(authentication.getName());
+            if (gamePlayer.isEmpty()) {
+                return new ResponseEntity<>(makeMap("error", "Game not found"), HttpStatus.NOT_FOUND);
+
+            } else if (gamePlayer.get().getPlayer().getId() != player.getId()) {
+                return new ResponseEntity<>(makeMap("error", "This is not your game"), HttpStatus.UNAUTHORIZED);
+
+            } else if (gamePlayer.get().getShips().size() > 0) {
+                return new ResponseEntity<>(makeMap("error", "all ships placed"), HttpStatus.FORBIDDEN);
+
+            } else if (ships.size() != 5) {
+                return new ResponseEntity<>(makeMap("error", "you must have 5 ships"), HttpStatus.FORBIDDEN);
+
+            } else {
+                for (Ship ship : ships) {
+                    gamePlayer.get().addShip(ship);
+                }
+                gamePlayerRepository.save(gamePlayer.get());
+                return new ResponseEntity<>(makeMap("done!", "You have added the ships"), HttpStatus.CREATED);
+            }
+        }
     }
 
 }

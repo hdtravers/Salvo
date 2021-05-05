@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <title>Game</title>
 </head>
-<body>
+<body background="">
 
 <div class="container" id="app">
 <h3 class="text-center ">Juego</h3>
@@ -14,7 +14,7 @@
  <a href="Games.html" class="btn btn-secondary btn-sm active" role="button" aria-pressed="true">Back</a>
 <h5>Player: {{player.userName }}</h5><h6>Opponent: {{oponente.userName}}</h6>
 <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-3">
     <table class="table table-bordered table-sm">
         <thead>
         <tr>
@@ -30,7 +30,7 @@
         </tbody>
     </table>
    </div>
-    <div class="col-md-6">
+    <div class="col-md-3">
     <table class="table table-bordered table-sm">
         <thead>
         <tr>
@@ -46,6 +46,9 @@
         </tbody>
     </table>
         </div>
+        <div>
+            <button v-on:click="enviaLosShips()" type="button" class="btn btn-primary">Enviar barcos</button>
+        </div>  
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>

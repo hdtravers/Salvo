@@ -20,7 +20,7 @@ public class Ship {
 
     @ElementCollection
     @Column(name = "shipLocation")
-    private List<String> ShipLocations = new ArrayList<>();
+    private List<String> shipLocations = new ArrayList<>();
 
 
     public Ship() {
@@ -28,14 +28,14 @@ public class Ship {
 
     public Ship(String type, List<String> shipLocations) {
         this.type = type;
-        ShipLocations = shipLocations;
+        this.shipLocations = shipLocations;
     }
 
 
     public Map<String, Object> toDTOShips() {
         Map<String, Object> dto = new LinkedHashMap<String, Object>();
         dto.put("type", this.type);
-        dto.put("ShipLocations", this.ShipLocations);
+        dto.put("ShipLocations", this.shipLocations);
         return dto;
     }
 
@@ -48,12 +48,26 @@ public class Ship {
     }
 
     public List<String> getShipLocations() {
-        return ShipLocations;
+        return shipLocations;
+    }
+
+    public void setShipLocations(List<String> shipLocations) {
+        this.shipLocations = shipLocations;
     }
 
     public void setGamePlayer(GamePlayer gamePlayer) {
         this.gamePlayer = gamePlayer;
     }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+
 
 }
 

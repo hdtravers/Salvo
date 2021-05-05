@@ -119,4 +119,6 @@ public class GamePlayer {
     }
 
 
+    public void AddShip(Ship ship) {
+    }
 }
