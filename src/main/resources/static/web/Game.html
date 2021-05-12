@@ -1,60 +1,97 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+
 <head>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <link rel="stylesheet" href="Style/style.css">
     <meta charset="UTF-8">
     <title>Game</title>
 </head>
-<body background="">
 
-<div class="container" id="app">
-<h3 class="text-center ">Juego</h3>
+<body class="fondo-game">
 
- <a href="Games.html" class="btn btn-secondary btn-sm active" role="button" aria-pressed="true">Back</a>
-<h5>Player: {{player.userName }}</h5><h6>Opponent: {{oponente.userName}}</h6>
-<div class="row">
-    <div class="col-md-3">
-    <table class="table table-bordered table-sm">
-        <thead>
-        <tr>
-            <th>#</th>
-            <th v-for="col in Columnas" scope="col">{{col}}</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr v-for="row in Filas">
-            <td>{{ row }}</td>
-            <td v-bind:id="row+col"  v-for="col in Columnas"></td>
-        </tr>
-        </tbody>
-    </table>
-   </div>
-    <div class="col-md-3">
-    <table class="table table-bordered table-sm">
-        <thead>
-        <tr>
-            <th>#</th>
-            <th v-for="col in Columnas" scope="col">{{col}}</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr v-for="row in Filas">
-            <td>{{ row }}</td>
-            <td v-bind:id="row+col+'s'"  v-for="col in Columnas"></td>
-        </tr>
-        </tbody>
-    </table>
+    <div class="container" id="app">
+        <h3 class="text-center ">Command Center</h3>
+
+        <a href="Games.html" class="btn btn-secondary btn-sm active" role="button" aria-pressed="true">Back</a>
+        <h6>Player: {{player.userName }}</h6>
+         <h6>Opponent: {{oponente.userName}}</h6>
+        <div class="row">
+            <div class="col-md-4">
+                <table  class="table table-bordered table-sm">
+                
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th v-for="col in Columnas" scope="col">{{col}}</th>
+                        </tr>
+                    </thead>
+
+                    <tbody class="tbody1">
+                        <tr v-for="row in Filas">
+                            <td>{{ row }}</td>
+                            <td v-on:click="clickEnCel(row,col)" v-bind:id="row+col" v-for="col in Columnas"></td>
+                        </tr>
+                    </tbody>
+                
+                </table>
+            </div>
+            <div class="col-md-4">
+                <table class="table table-bordered table-sm">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th v-for="col in Columnas" scope="col">{{col}}</th>
+                        </tr>
+                    </thead>
+
+                    <tbody class="tbody2">
+                        <tr v-for="row in Filas">
+                            <td>{{ row }}</td>
+                            <td v-bind:id="row+col+'s'" v-for="col in Columnas"></td>
+                        </tr>
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            
+
         </div>
-        <div>
-            <button v-on:click="enviaLosShips()" type="button" class="btn btn-primary">Enviar barcos</button>
-        </div>  
+        <div class="botones" v-if="game.ships != null && game.ships.length == 0 ">
+            
+            <button v-on:click="enviaLosShips()"  type="button" class="btn btn-secondary btn-sm">Send Ships</button>
+             
+            <div class="form-check">
+                <input v-model:value="orientacionActual" value="Horizontal"class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
+                <label  class="form-check-label" for="flexRadioDefault1">Horizontal</label>
+              </div>
+              <div class="form-check">
+                <input v-model:value="orientacionActual" value="Vertical"class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked>
+                <label class="form-check-label" for="flexRadioDefault2">Vertical</label>
+              </div>
+              
+              <div >
+                <select v-model:value="shipActual" class="form-select form-select-sm" aria-label=".form-select-sm example">
+                    <option class="botones" v-bind:value="ship" v-for="ship in shipsParaPost">{{ship.type}}</option> 
+                  </select>
+                </div>
+
+        </div>
+
     </div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
-<script src="js/game.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous">
+    </script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous">
+    </script>
+    <script src="js/game.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 </body>
+
 </html>

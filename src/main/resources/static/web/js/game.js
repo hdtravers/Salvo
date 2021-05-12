@@ -1,6 +1,7 @@
 var app = new Vue({
     el: '#app',
     data: {
+        game:{},
         ships: [],
         gpId: null,
         Columnas: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
@@ -8,8 +9,39 @@ var app = new Vue({
         oponente: {},
         player: {},
         salvos: [],
-        shipsOrdenado: [],
+        shipsParaPost: [{
+                "type": "Destructor",
+                "size": 3,
+                "shipLocations": [],
+            },
+            {
+                "type": "Portaaviones",
+                "size": 5,
+                "shipLocations": [],
+            },
+            {
+                "type": "Submarino",
+                "size": 3,
+                "shipLocations": [],
+            },
+            {
+                "type": "Acorazado",
+                "size": 4,
+                "shipLocations": [],
+            },
+            {
+                "type": "Bote de Patrulla",
+                "size": 2,
+                "shipLocations": [],
+            }
+        ],
+        shipActual: {
+            "type": "Destructor",
+            "size": 3,
 
+        },
+        orientacionActual: "Vertical",
+        // shipPosicionado:[],
     },
     methods: {
         obtenerGpId: function () {
@@ -23,10 +55,13 @@ var app = new Vue({
                 app.allShip();
                 app.allSalvos();
 
+
             })
         },
+
         allShip: function () {
-            for (i = 0; i < app.game.ships.length; i++) {
+            for (i = 0; i < app.game.ships.length; i++){
+                //if(app.game.ships[i].length == 5){ 
                 for (k = 0; k < app.game.ships[i].ShipLocations.length; k++) {
                     var elemento = document.getElementById(app.game.ships[i].ShipLocations[k]);
                     elemento.classList.add("printCell");
@@ -40,7 +75,8 @@ var app = new Vue({
                     }
                 }
 
-            }
+           // }
+        }
         },
         vistaGp: function () {
             for (i = 0; i < app.game.gamePlayers.length; i++) {
@@ -53,43 +89,35 @@ var app = new Vue({
         },
 
         enviaLosShips: function () {
-            $.post({
-                    url: "/api/games/players/" + app.gpId + "/ships",
-                    data: JSON.stringify(
-                        [{
-                                "type": "Destructor",
-                                "shipLocations": ["A1", "B1", "C1"]
-                            },
-                            {
-                                "type": "Portaaviones",
-                                "shipLocations": ["H9", "H10"]
-                            },
-                            {
-                                "type": "Submarino",
-                                "shipLocations": ["F8", "F9", "F10"]
-                            },
-                            {
-                                "type": "Acorazado",
-                                "shipLocations": ["A6", "B6", "C6", "D6"]
-                            },
-                            {
-                                "type": "Bote de Patrulla",
-                                "shipLocations": ["H5", "H6"]
-                            }
-                        ]
-                    ),
-                    dataType: "text",
-                    contentType: "application/json"
-                })
-                .done(function () {
-                    alert("Ships added"), location.reload();
-                })
-                .fail(function () {
-                    alert("noooooooo");
-                })
+         if (app.shipsParaPost[0].shipLocations.length != 0 &&
+             app.shipsParaPost[1].shipLocations.length != 0 && 
+             app.shipsParaPost[2].shipLocations.length != 0 && 
+             app.shipsParaPost[3].shipLocations.length != 0 &&
+             app.shipsParaPost[4].shipLocations.length != 0) {
 
 
+                $.post({
+                        url: "/api/games/players/" + app.gpId + "/ships",
+                        data: JSON.stringify(app.shipsParaPost),
+                        dataType: "text",
+                        contentType: "application/json"
+                    })
+                    .done(function () { location.reload(); })
+                } else {Swal.fire({
+                    position: 'center',
+                    icon: 'error',
+                    title: 'You have to add 5 ships!',
+                    showConfirmButton: false,
+                    timer: 1000
+                })
+            }
         },
+
+
+
+
+
+
         allSalvos: function () {
             for (i = 0; i < app.game.salvos.length; i++) {
                 if (app.player.id == app.game.salvos[i].playerid) {
@@ -106,19 +134,58 @@ var app = new Vue({
                 }
             }
         },
-    }
 
+        clickEnCel: function (letra, numero) {
+            ships = []
+            if(app.game.ships.length == 0){
+            if (app.orientacionActual == "Vertical") {
+                for (j = 0; j < app.shipActual.size; j++) {
+                    for (i = 0; i < app.Filas.length; i++) {
+                        if (app.Filas[i] == letra) {
+                            ships.push(app.Filas[i + j] + numero)
+                        }
+                    }
+                }
+                if (!app.shipsParaPost.some(x => ships.some(y => x.shipLocations.includes(y))) && (app.Filas.indexOf(letra) + app.shipActual.size) < 11) {
+
+                    for (k = 0; k < app.shipsParaPost.length; k++) {
+                        if (app.shipsParaPost[k].type == app.shipActual.type) {
+                            for (j = 0; j < app.shipsParaPost[k].shipLocations.length; j++) {
+                                document.getElementById(app.shipsParaPost[k].shipLocations[j]).classList.remove("printCell")
+                            }
+                            app.shipsParaPost.find(h => h.type == app.shipActual.type).shipLocations = []
+                            for (i = 0; i < ships.length; i++) {
+                                app.shipsParaPost[k].shipLocations.push(ships[i])
+                                document.getElementById(ships[i]).classList.add("printCell");
+
+                            }
+                        }
+                    }
+                }
+            } else {
+                for (j = 0; j < app.shipActual.size; j++) {
+                    ships.push(letra + (parseInt(numero) + j))
+                }
+                if (!app.shipsParaPost.some(h => ships.some(m => h.shipLocations.includes(m))) && (Number(numero)) + Number(app.shipActual.size) <= 11) {
+
+                    for (k = 0; k < app.shipsParaPost.length; k++) {
+                        if (app.shipsParaPost[k].type == app.shipActual.type) {
+                            for (j = 0; j < app.shipsParaPost[k].shipLocations.length; j++) {
+                                document.getElementById(app.shipsParaPost[k].shipLocations[j]).classList.remove("printCell")
+                            }
+                            app.shipsParaPost.find(h => h.type == app.shipActual.type).shipLocations = []
+                            for (i = 0; i < ships.length; i++) {
+                                app.shipsParaPost[k].shipLocations.push(ships[i])
+                                document.getElementById(ships[i]).classList.add("printCell");
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        }
+      //
+    }
 })
 app.obtenerGpId();
 app.findGame();
-
-/*
- jsonConShips: function () {
-            for (i = 0; i < app.game.ships.length; i++) {
-                app.shipsOrdenado.push({
-                    "type": app.game.ships[i].type,
-                    "shipLocations": app.game.ships[i].ShipLocations
-                })
-            }
-
-        },*/

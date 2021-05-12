@@ -2,5 +2,66 @@
     background-color:blue;
 }
 .printSalvo{
+    background-color:red;
+}
+
+/*vista de game*/
+h3{
+    color: rgb(226, 86, 43);
+}
+h6{
+    color: rgb(226, 86, 43);
+}
+.botones{
+    color: rgb(226, 86, 43);
+    font-weight: bold;
+}
+
+.fondo-game{
+    background-image: url(../imagenesbarcos/fondogame1.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+.tbody1{
+    background-image: url(../imagenesbarcos/fondogame3.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+.tbody2{
+    background-image: url(../imagenesbarcos/fondogame2.jpg);
+    background-repeat: no-repeat;
+    background-size:cover;
+}
+
+
+/*vista de games*/
+
+.fondo-games{
+    background-image: url(../imagenesbarcos/4k1.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+
+
+
+
+
+
+
+
+.Destructor{
     background-color:green;
+}
+.Portaaviones{
+    background-color:blueviolet;
+}
+.Submarino{
+    background-color:blue;
+}
+.Acorazado{
+    background-color:greenyellow;
+}
+.BoteDePatrulla{
+    background-color:rosybrown;
 }
