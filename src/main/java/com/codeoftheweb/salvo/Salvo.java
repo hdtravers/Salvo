@@ -30,16 +30,17 @@ public class Salvo {
     public Salvo() {
     }
 
-
-    public Salvo(List<String> locations, int turno) {
+    public Salvo(List<String> locations, int turno, GamePlayer gamePlayer) {
         Locations = locations;
         this.turno = turno;
+        this.gamePlayer = gamePlayer;
     }
+
     public Map<String, Object> toDTOSalvos() {
         Map<String, Object> dto = new LinkedHashMap<String, Object>();
-        dto.put("playerid", this.gamePlayer.getPlayer().getId());
-        dto.put("turno", this.turno);
         dto.put("Locations", this.Locations);
+        dto.put("turno", this.turno);
+        dto.put("playerid", this.gamePlayer.getPlayer().getId());
         return dto;
     }
     public long getId() {return id;}
@@ -47,7 +48,9 @@ public class Salvo {
 
     public List<String> getLocations() {return Locations;}
 
-    public int getTurno() {return turno;}
+    public int getTurno() { return turno;}
+
+    public void setTurno(int turno) { this.turno = turno;}
 
     public GamePlayer getGamePlayer() {return gamePlayer;}
 

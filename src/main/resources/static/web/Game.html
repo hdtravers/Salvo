@@ -49,17 +49,19 @@
                     <tbody class="tbody2">
                         <tr v-for="row in Filas">
                             <td>{{ row }}</td>
-                            <td v-bind:id="row+col+'s'" v-for="col in Columnas"></td>
+                            <td v-on:click="clickSalvo(row,col)" v-bind:id="row+col+'s'" v-for="col in Columnas"></td>
                         </tr>
                     </tbody>
 
                 </table>
-
             </div>
-
-            
-
+            <div>                    
+                <button v-on:click="enviaSalvos()"  type="button" class="btn btn-secondary btn-sm">Send Salvos</button>
+           </div>
         </div>
+                 
+
+
         <div class="botones" v-if="game.ships != null && game.ships.length == 0 ">
             
             <button v-on:click="enviaLosShips()"  type="button" class="btn btn-secondary btn-sm">Send Ships</button>

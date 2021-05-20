@@ -21,6 +21,8 @@ h6{
     background-image: url(../imagenesbarcos/fondogame1.jpg);
     background-repeat: no-repeat;
     background-size: cover;
+    
+    
 }
 .tbody1{
     background-image: url(../imagenesbarcos/fondogame3.jpg);
@@ -30,7 +32,8 @@ h6{
 .tbody2{
     background-image: url(../imagenesbarcos/fondogame2.jpg);
     background-repeat: no-repeat;
-    background-size:cover;
+    background-size:cover
+    ;
 }
 
 

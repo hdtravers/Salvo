@@ -19,14 +19,14 @@ var app = new Vue({
         logout: function () {
             $.post("/api/logout").done(function () {
                 location.reload();
-                alert("logged out succesfull")
+                alert("Desconectado con éxito")
             })
         },
         login: function () {
             var user = app.emailLogeado
             var pass = app.passLogeado
             if (user == "" || pass == "") {
-                alert("Please fill all the fields");
+                alert("Por favor llene todos los campos");
             } else {
                 $.post("/api/login", {
                     userName: user,
@@ -35,7 +35,7 @@ var app = new Vue({
                     location.reload()
                 })
                     .fail(function () {
-                        alert("Pleaste, try again :(");
+                        alert("Por favor, inténtalo de nuevo :");
                     })
             }
         },
@@ -43,7 +43,7 @@ var app = new Vue({
             var user = app.emailLogeado
             var pass = app.passLogeado
             if (user == "" || pass == "") {
-                alert("Please fill all the fields");
+                alert("Por favor llene todos los campos");
             } else {
                 $.post("/api/players", {
                     userName: user,

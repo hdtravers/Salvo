@@ -102,14 +102,14 @@ public class SalvoApplication {
 			Ship ship9 = new Ship("Acorazado", Arrays.asList("C3", "C4", "C5", "C6"));
 			Ship ship10 = new Ship("Submarino", Arrays.asList("E3", "E4", "E5"));
 
-			Salvo salvo1 = new Salvo(Arrays.asList("H1", "A1", "A10"), 1);
-			Salvo salvo2 = new Salvo(Arrays.asList("H2", "A2", "A9"), 2);
-			Salvo salvo3 = new Salvo(Arrays.asList("H3", "A3", "A8"), 3);
-			Salvo salvo4 = new Salvo(Arrays.asList("H4", "A4", "A7"), 4);
-			Salvo salvo5 = new Salvo(Arrays.asList("H5", "A5", "A6"), 5);
-			Salvo salvo6 = new Salvo(Arrays.asList("H6", "A6", "A4"), 6);
-			Salvo salvo7 = new Salvo(Arrays.asList("H7", "A7", "A3"), 7);
-			Salvo salvo8 = new Salvo(Arrays.asList("H8", "A8", "A2"), 8);
+			Salvo salvo1 = new Salvo(Arrays.asList("H1", "A1", "A10"), 1, gamePlayer1);
+			Salvo salvo2 = new Salvo(Arrays.asList("H2", "A2", "A9"), 2, gamePlayer1);
+			Salvo salvo3 = new Salvo(Arrays.asList("H3", "A3", "A8"), 3, gamePlayer1 );
+			Salvo salvo4 = new Salvo(Arrays.asList("H4", "A4", "A7"), 4, gamePlayer2);
+			Salvo salvo5 = new Salvo(Arrays.asList("H5", "A5", "A6"), 5, gamePlayer2);
+			Salvo salvo6 = new Salvo(Arrays.asList("H6", "A6", "A4"), 6, gamePlayer3);
+			Salvo salvo7 = new Salvo(Arrays.asList("H7", "A7", "A3"), 7, gamePlayer3);
+			Salvo salvo8 = new Salvo(Arrays.asList("H8", "A8", "A2"), 8, gamePlayer4);
 
 
 			gamePlayer1.addShip(ship1);

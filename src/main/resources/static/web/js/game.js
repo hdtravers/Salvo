@@ -35,14 +35,24 @@ var app = new Vue({
                 "shipLocations": [],
             }
         ],
+        salvoParaPost:
+            {
+                "locations" : [],
+                "turno" : 0, 
+              },
+        
         shipActual: {
             "type": "Destructor",
             "size": 3,
 
         },
         orientacionActual: "Vertical",
-        // shipPosicionado:[],
+
+
+      
     },
+    
+
     methods: {
         obtenerGpId: function () {
             const urlParams = new URLSearchParams(window.location.search);
@@ -61,7 +71,7 @@ var app = new Vue({
 
         allShip: function () {
             for (i = 0; i < app.game.ships.length; i++){
-                //if(app.game.ships[i].length == 5){ 
+    
                 for (k = 0; k < app.game.ships[i].ShipLocations.length; k++) {
                     var elemento = document.getElementById(app.game.ships[i].ShipLocations[k]);
                     elemento.classList.add("printCell");
@@ -74,9 +84,7 @@ var app = new Vue({
                             }
                     }
                 }
-
-           // }
-        }
+            }
         },
         vistaGp: function () {
             for (i = 0; i < app.game.gamePlayers.length; i++) {
@@ -102,16 +110,42 @@ var app = new Vue({
                         dataType: "text",
                         contentType: "application/json"
                     })
-                    .done(function () { location.reload(); })
+                    .done(function (respuesta) { location.reload(); })
                 } else {Swal.fire({
                     position: 'center',
                     icon: 'error',
-                    title: 'You have to add 5 ships!',
+                    title: JSON.parse(respuesta.responseText).error,
                     showConfirmButton: false,
-                    timer: 1000
+                    timer: 3000
                 })
             }
         },
+
+
+
+       enviaSalvos: function () {
+        
+        $.post({
+            url: "/api/games/players/" + app.gpId + "/salvos",
+            data: JSON.stringify(app.salvoParaPost),
+            dataType: "text",
+            contentType: "application/json"
+        })
+        .done(function () {
+            location.reload();
+        })
+        .fail(function (respuesta) {
+            Swal.fire({
+                position: 'center',
+                icon: 'error',
+                title: JSON.parse(respuesta.responseText).error,
+                showConfirmButton: false,
+                timer: 3000
+            })
+        })
+},
+             
+        
 
 
 
@@ -134,6 +168,28 @@ var app = new Vue({
                 }
             }
         },
+
+        clickSalvo: function (letra, numero){
+            var slocation= letra + numero
+            var turno = app.game.salvos.filter(el => el.playerid == app.player.id).length + 1 
+
+             if(app.salvoParaPost.locations.length <= 4 && !app.game.salvos.some(z => z.locations.includes(slocation)) && !app.salvoParaPost.locations.includes( slocation)  ){
+
+               app.salvoParaPost.turno = turno 
+               app.salvoParaPost.locations.push(slocation)
+               document.getElementById(slocation + "s").classList.add("printSalvo"); 
+
+            } else{
+
+                  if(app.salvoParaPost.locations.length <= 5 && app.salvoParaPost.locations.includes(slocation)) {
+                     app.salvoParaPost.locations.splice(app.salvoParaPost.locations.indexOf(slocation),1 )
+                     document.getElementById(slocation + "s").classList.remove("printSalvo")
+                 
+             }
+             
+            }
+        },
+
 
         clickEnCel: function (letra, numero) {
             ships = []
