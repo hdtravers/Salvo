@@ -171,9 +171,11 @@ var app = new Vue({
 
         clickSalvo: function (letra, numero){
             var slocation= letra + numero
-            var turno = app.game.salvos.filter(el => el.playerid == app.player.id).length + 1 
+            var turno = app.game.salvos.filter(el => el.playerid == app.player.id).length + 1
+            var salvosFilter =  app.game.salvos.filter(el => el.playerid == app.player.id)
+            //if( app.game.salvos.filter(el => el.playerid == app.player.id)){
 
-             if(app.salvoParaPost.locations.length <= 4 && !app.game.salvos.some(z => z.locations.includes(slocation)) && !app.salvoParaPost.locations.includes( slocation)  ){
+             if(app.salvoParaPost.locations.length <= 4 &&  !app.salvoParaPost.locations.includes(slocation) && !salvosFilter.some(x => x.Locations.includes(slocation)) )  {
 
                app.salvoParaPost.turno = turno 
                app.salvoParaPost.locations.push(slocation)
@@ -188,6 +190,7 @@ var app = new Vue({
              }
              
             }
+         //}
         },
 
 

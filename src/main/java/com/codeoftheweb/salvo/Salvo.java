@@ -4,10 +4,8 @@ package com.codeoftheweb.salvo;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Entity
@@ -43,6 +41,41 @@ public class Salvo {
         dto.put("playerid", this.gamePlayer.getPlayer().getId());
         return dto;
     }
+    public Map<String, Object> toDTOHitShips() {
+        Map<String, Object> dto = new LinkedHashMap<String, Object>();
+        dto.put("turno", this.turno);
+        dto.put("hits", this.getHits());
+        return dto;
+    }
+
+
+    public Map<String, Object> toDTOShipsSunks() {
+        Map<String, Object> dto = new LinkedHashMap<String, Object>();
+        dto.put("turno", this.turno);
+        dto.put("sunks", this.getSunks().stream().map(Ship::toDTOShips));
+        return dto;
+    }
+
+public Set<String> getHits(){
+    Set<String> hit = new HashSet<>();
+    if(gamePlayer.getOponente().isPresent()){
+        Set<String> locationShips = getGamePlayer().getOponente().get().getShips().stream().flatMap(ship -> ship.getShipLocations().stream()).collect(Collectors.toSet());
+        locationShips.retainAll(Locations);
+        hit=locationShips;}
+    return hit;
+    }
+
+public List<Ship> getSunks(){
+         List<Ship> sunks = new ArrayList<>();
+         List<String> totalHitsLocations = gamePlayer.getSalvos().stream().filter(x -> x.turno <= this.getTurno()).flatMap(x -> x.getHits().stream()).collect(Collectors.toList());
+         if(gamePlayer.getOponente().isPresent()) {
+             sunks = gamePlayer.getOponente().get().getShips().stream().filter(x ->x.getShipLocations().containsAll(totalHitsLocations)).collect(Collectors.toList());
+        }
+        return sunks;
+}
+
+
+
     public long getId() {return id;}
 
 

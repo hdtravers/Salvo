@@ -147,7 +147,7 @@ public class SalvoController {
                 return new ResponseEntity<>(makeMap("error", "Debes enviar 5 salvas por turno"), HttpStatus.FORBIDDEN);
 
             } else {
-                Optional<GamePlayer> player2 = gamePlayer.get().getGame().getGamePlayers().stream().filter(gamePlayer2 -> gamePlayer2.getId() != gamePlayer.get().getId()).findFirst();
+                Optional<GamePlayer> player2 = gamePlayer.get().getOponente();
                 if(player2.isPresent()) {
                     if (gamePlayer.get().getSalvos().size() - player2.get().getSalvos().size() >= 1) {
                         return new ResponseEntity<>(makeMap("error", "No te adelantes, espera tu turno"), HttpStatus.FORBIDDEN);

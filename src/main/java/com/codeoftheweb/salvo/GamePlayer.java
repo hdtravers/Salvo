@@ -4,10 +4,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static java.util.stream.Collectors.toList;
 
@@ -74,7 +71,13 @@ public class GamePlayer {
         dto.put("gamePlayers", this.game.getGamePlayers().stream().map(GamePlayer::toDTO).collect(toList()));
         dto.put("ships",this.getShips().stream().map(Ship::toDTOShips).collect(toList()));
         dto.put( "salvos" ,this.game.getGamePlayers().stream().flatMap(gamePlayer -> gamePlayer.getSalvos().stream().map(Salvo::toDTOSalvos)).collect(toList()));
+        dto.put("hits", this.getSalvos().stream().map(Salvo::toDTOHitShips));
+        dto.put("sunks",this.getSalvos().stream().map(Salvo::toDTOShipsSunks));
         return dto;
+    }
+
+    public Optional<GamePlayer> getOponente() {
+       return this.game.getGamePlayers().stream().filter(gp -> gp.getId() != this.getId()).findFirst();
     }
 
 
