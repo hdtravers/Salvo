@@ -15,7 +15,7 @@ package com.codeoftheweb.salvo.controllers;
         import java.util.*;
         import java.util.stream.Collectors;
 
-        import static java.util.stream.Collectors.reducing;
+
 
 @RestController
 @RequestMapping("/api")
@@ -188,7 +188,7 @@ public class SalvoController {
         } else {
             Optional<GamePlayer> gamePlayer = gamePlayerRepository.findById(gamePlayerId);
             Player player = playerRepository.findByUserName(authentication.getName());
-            if (gamePlayer.isEmpty()) {
+            if (!gamePlayer.isPresent()) {
                 return new ResponseEntity<>(makeMap("error", "Juego no encontrado"), HttpStatus.NOT_FOUND);
 
             } else if (gamePlayer.get().getPlayer().getId() != player.getId()) {
