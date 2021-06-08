@@ -1,10 +1,15 @@
 .printCell {
     background-color:blue;
 }
+.printsunk{
+    background-image: url(https://media.giphy.com/media/0FmDj8UTE7HZ3eAzsh/giphy.gif);
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
 .printSalvo{
     background-color:red;
 }
-
 /*vista de game*/
 h3{
     color: rgb(226, 86, 43);

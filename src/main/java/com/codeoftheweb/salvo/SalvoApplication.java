@@ -1,13 +1,16 @@
 package com.codeoftheweb.salvo;
 
+import com.codeoftheweb.salvo.models.*;
+import com.codeoftheweb.salvo.repositories.GamePlayerRepository;
+import com.codeoftheweb.salvo.repositories.GameRepository;
+import com.codeoftheweb.salvo.repositories.PlayerRepository;
+import com.codeoftheweb.salvo.repositories.ScoreRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.GlobalAuthenticationConfigurerAdapter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -20,9 +23,6 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.WebAttributes;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -70,10 +70,10 @@ public class SalvoApplication {
 
 
 
-			Score score1 = new Score(player1, game1, 0.5);
-			Score score2 = new Score(player2, game1, 1);
-			Score score3 = new Score(player3, game2, 0.5);
-			Score score4 = new Score(player4, game2, 0.5);
+			Score score1 = new Score(LocalDateTime.now() ,player1, game1, 0.5);
+			Score score2 = new Score(LocalDateTime.now() ,player2, game1, 1);
+			Score score3 = new Score(LocalDateTime.now() ,player3, game2, 0.5);
+			Score score4 = new Score(LocalDateTime.now() ,player4, game2, 0.5);
 
 
 			scoreRepository.save(score1);

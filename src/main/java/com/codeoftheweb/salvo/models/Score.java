@@ -1,4 +1,4 @@
-package com.codeoftheweb.salvo;
+package com.codeoftheweb.salvo.models;
 
 
 import org.hibernate.annotations.GenericGenerator;
@@ -7,7 +7,6 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
 
 @Entity
 public class Score {
@@ -32,12 +31,13 @@ public class Score {
 
     public Score(){}
 
-    public Score( Player player, Game game, double score) {
+    public Score(LocalDateTime finishDate, Player player, Game game, double score) {
 
+        this.finishDate = LocalDateTime.now();
         this.player = player;
         this.game = game;
         this.score = score;
-        this.finishDate = LocalDateTime.now();
+
     }
 
 

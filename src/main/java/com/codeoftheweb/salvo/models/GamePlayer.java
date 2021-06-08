@@ -1,4 +1,4 @@
-package com.codeoftheweb.salvo;
+package com.codeoftheweb.salvo.models;
 
 import org.hibernate.annotations.GenericGenerator;
 
@@ -66,15 +66,63 @@ public class GamePlayer {
 
     public Map<String, Object> toDTOGameView() {
         Map<String, Object> dto = new LinkedHashMap<String, Object>();
+        dto.put("gameStatus",this.gameStatus());
         dto.put("id", this.id);
         dto.put("created", this.joinDate);
         dto.put("gamePlayers", this.game.getGamePlayers().stream().map(GamePlayer::toDTO).collect(toList()));
         dto.put("ships",this.getShips().stream().map(Ship::toDTOShips).collect(toList()));
         dto.put( "salvos" ,this.game.getGamePlayers().stream().flatMap(gamePlayer -> gamePlayer.getSalvos().stream().map(Salvo::toDTOSalvos)).collect(toList()));
-        dto.put("hits", this.getSalvos().stream().map(Salvo::toDTOHitShips));
-        dto.put("sunks",this.getSalvos().stream().map(Salvo::toDTOShipsSunks));
+        dto.put("hits", this.getSalvos().stream().map(Salvo::toDTOHitShips).collect(toList()));
+        dto.put("sunkeds",this.getSalvos().stream().map(Salvo::toDTOShipsSunks).collect(toList()));
+        if(this.getOponente().isPresent()) {
+           dto.put("sunkedsOpponent", this.getOponente().get().getSalvos().stream().map(Salvo::toDTOShipsSunks).collect(toList()));
+           dto.put("hitsOpponent", this.getOponente().get().getSalvos().stream().map(Salvo::toDTOHitShips).collect(toList()));
+        }
         return dto;
     }
+
+    public  GameStatus gameStatus(){
+        if (this.getShips().isEmpty()) {
+            return GameStatus.PLACE_SHIPS;
+        } else {
+            if (this.getOponente().isPresent()) {
+                if (this.getOponente().get().getShips().isEmpty()) {
+                    return GameStatus.WAIT_FOR_SHIPS_OPPONENT;
+                } else {
+                    if (this.getSalvos().stream().noneMatch(em -> em.getTurno() == this.getSalvos().size())) {
+                        return GameStatus.PLACE_SALVOS;
+                    } else {
+                        if (this.getOponente().get().getSalvos().stream().noneMatch(em -> em.getTurno() == this.getSalvos().size())) {
+                            return GameStatus.WAIT_FOR_SALVO_OPPONENT;
+                        } else if (this.getSalvos().size() == this.getOponente().get().getSalvos().size()) {
+                            List<Long> mySunks = this.getSalvos().stream().filter(x -> x.getTurno() == this.getSalvos().size()).flatMap(x -> x.getSunks().stream()).map(Ship::getId).collect(toList());
+                            List<Long> opponentSunks = new ArrayList<>();
+
+                            if (this.getOponente().isPresent()) {
+                                opponentSunks = this.getOponente().get().getSalvos().stream().filter(x -> x.getTurno() == this.getSalvos().size()).flatMap(x -> x.getSunks().stream()).map(Ship::getId).collect(toList());
+                            }
+                            if (mySunks.size() == 5 && opponentSunks.size() == 5) {
+                                return GameStatus.TIE;
+                            } else if (mySunks.size() == 5) {
+                                return GameStatus.WIN;
+                            } else if (opponentSunks.size() == 5) {
+                                return GameStatus.LOSE;
+                            } else {
+                                return GameStatus.PLACE_SALVOS;
+                            }
+                        } else {
+                            return GameStatus.PLACE_SALVOS;
+
+                        }
+                    }
+                }
+            } else {
+                return GameStatus.WAIT_OPPONENT;
+            }
+        }
+    }
+
+
 
     public Optional<GamePlayer> getOponente() {
        return this.game.getGamePlayers().stream().filter(gp -> gp.getId() != this.getId()).findFirst();

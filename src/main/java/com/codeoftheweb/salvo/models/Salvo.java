@@ -1,4 +1,4 @@
-package com.codeoftheweb.salvo;
+package com.codeoftheweb.salvo.models;
 
 
 import org.hibernate.annotations.GenericGenerator;
@@ -69,7 +69,7 @@ public List<Ship> getSunks(){
          List<Ship> sunks = new ArrayList<>();
          List<String> totalHitsLocations = gamePlayer.getSalvos().stream().filter(x -> x.turno <= this.getTurno()).flatMap(x -> x.getHits().stream()).collect(Collectors.toList());
          if(gamePlayer.getOponente().isPresent()) {
-             sunks = gamePlayer.getOponente().get().getShips().stream().filter(x ->x.getShipLocations().containsAll(totalHitsLocations)).collect(Collectors.toList());
+             sunks = gamePlayer.getOponente().get().getShips().stream().filter(x ->totalHitsLocations.containsAll(x.getShipLocations())).collect(Collectors.toList());
         }
         return sunks;
 }

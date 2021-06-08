@@ -1,6 +1,8 @@
-package com.codeoftheweb.salvo;
+package com.codeoftheweb.salvo.controllers;
 
 
+        import com.codeoftheweb.salvo.models.*;
+        import com.codeoftheweb.salvo.repositories.*;
         import org.springframework.beans.factory.annotation.Autowired;
         import org.springframework.http.HttpStatus;
         import org.springframework.http.ResponseEntity;
@@ -14,7 +16,6 @@ package com.codeoftheweb.salvo;
         import java.util.stream.Collectors;
 
         import static java.util.stream.Collectors.reducing;
-        import static java.util.stream.Collectors.toList;
 
 @RestController
 @RequestMapping("/api")
@@ -33,6 +34,8 @@ public class SalvoController {
 
     @Autowired
     private SalvoRepository salvoRepository;
+    @Autowired
+    private ScoreRepository scoreRepository;
 
     private boolean isGuest(Authentication authentication) {
         return authentication == null || authentication instanceof AnonymousAuthenticationToken;
@@ -131,7 +134,7 @@ public class SalvoController {
         }else {
             Optional<GamePlayer> gamePlayer = gamePlayerRepository.findById(gamePlayerId);
             Player player = playerRepository.findByUserName(authentication.getName());
-            if (gamePlayer.isEmpty()) {
+            if (!gamePlayer.isPresent()) {
                 return new ResponseEntity<>(makeMap("error", "Game not found"), HttpStatus.NOT_FOUND);
 
             } else if (gamePlayer.get().getPlayer().getId()  != player.getId()) {
@@ -146,24 +149,34 @@ public class SalvoController {
             }else if (salvos.getLocations().size() != 5  ) {
                 return new ResponseEntity<>(makeMap("error", "Debes enviar 5 salvas por turno"), HttpStatus.FORBIDDEN);
 
+
             } else {
                 Optional<GamePlayer> player2 = gamePlayer.get().getOponente();
                 if(player2.isPresent()) {
                     if (gamePlayer.get().getSalvos().size() - player2.get().getSalvos().size() >= 1) {
-                        return new ResponseEntity<>(makeMap("error", "No te adelantes, espera tu turno"), HttpStatus.FORBIDDEN);
+                        return new ResponseEntity<>(makeMap("error", "You can't skip turns, cheater!"), HttpStatus.UNAUTHORIZED);
                     }
+
                 }else{
                     return new ResponseEntity<>(makeMap("error", "Espera un oponente"), HttpStatus.FORBIDDEN);
                 }
 
                 Salvo salvo = new Salvo(salvos.getLocations(), salvos.getTurno(), gamePlayer.get());
                 salvoRepository.save(salvo);
+                gamePlayer.get().getSalvos().add(salvo);
+                if (gamePlayer.get().gameStatus() == GameStatus.TIE) {
+                    scoreRepository.save(new Score(LocalDateTime.now(), gamePlayer.get().getPlayer(), gamePlayer.get().getGame(), 0.5));
+                    scoreRepository.save(new Score(LocalDateTime.now(), gamePlayer.get().getOponente().get().getPlayer(), gamePlayer.get().getGame(), 0.5));
+                }else if (gamePlayer.get().gameStatus() == GameStatus.WIN) {
+                    scoreRepository.save(new Score(LocalDateTime.now(), gamePlayer.get().getPlayer(), gamePlayer.get().getGame(), 1.0));
+                    scoreRepository.save(new Score(LocalDateTime.now(), gamePlayer.get().getOponente().get().getPlayer(), gamePlayer.get().getGame(), 0.0));
+                }else if (gamePlayer.get().gameStatus() == GameStatus.LOSE) {
+                    scoreRepository.save(new Score(LocalDateTime.now(), gamePlayer.get().getOponente().get().getPlayer(), gamePlayer.get().getGame(), 1.0));
+                    scoreRepository.save(new Score(LocalDateTime.now(), gamePlayer.get().getPlayer(), gamePlayer.get().getGame(), 0.0));
+                }
                 return new ResponseEntity<>(makeMap("done!", "Has agregado las salvas"), HttpStatus.CREATED);
             }
         }
-
-
-
 
     }
 
