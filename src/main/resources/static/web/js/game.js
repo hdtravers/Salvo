@@ -54,20 +54,37 @@ var app = new Vue({
     
 
     methods: {
-        obtenerGpId: function () {
-            const urlParams = new URLSearchParams(window.location.search);
-            app.gpId = urlParams.get('Gp');
-        },
+        reloadData: function() {
+            if(this.game.gameStatus == "WAIT_OPPONENT" || this.game.gameStatus == "WAIT_FOR_SALVO_OPPONENT" || this.game.gameStatus == "WAIT_FOR_SHIPS_OPPONENT"){
+                setTimeout(this.findGame, 2000);
+            }
+
+        }, 
+
+
         findGame: function () {
-            $.get("/api/game_view/" + app.gpId, function (data) {
+            $.get("/api/game_view/" + this.gpId, function (data) {
                 app.game = data;
                 app.vistaGp();
                 app.allShip();
                 app.allSalvos();
+                if(app.game.gamePlayers.length > 1 ){
+                 app.printHits();
+                 app.printSunks();
+
+                }
+                app.reloadData();
 
 
             })
         },
+
+
+        obtenerGpId: function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            this.gpId = urlParams.get('Gp');
+        },
+       
 
         allShip: function () {
             for (i = 0; i < app.game.ships.length; i++){
@@ -143,6 +160,7 @@ var app = new Vue({
                 timer: 3000
             })
         })
+    
 },
              
         
@@ -169,24 +187,53 @@ var app = new Vue({
             }
         },
 
+        printSunks: function (){
+            for (i = 0; i < app.game.sunkeds.length; i++) {
+               for(k = 0; k < app.game.sunkeds[i].sunks.length; k++){
+                   for(j = 0; j < app.game.sunkeds[i].sunks[k].ShipLocations.length; j++ ){
+                    document.getElementById(app.game.sunkeds[i].sunks[k].ShipLocations[j] + "s").classList.add("printsunk");
+                   }
+               
+               }
+            }
+            for (i = 0; i < app.game.sunkedsOpponent.length; i++) {
+                for(k = 0; k < app.game.sunkedsOpponent[i].sunks.length; k++){
+                    for(j = 0; j < app.game.sunkedsOpponent[i].sunks[k].ShipLocations.length; j++ ){
+                     document.getElementById(app.game.sunkedsOpponent[i].sunks[k].ShipLocations[j]).classList.add("printsunk");
+                    }
+                
+                }
+             }
+            
+
+        },
+        printHits: function (){
+            for (i = 0; i < app.game.hits.length; i++) {
+               for(k = 0; k < app.game.hits[i].hits.length; k++){
+                    document.getElementById(app.game.hits[i].hits[k]+ "s").classList.add("printsunk");
+               }
+            }
+            for (i = 0; i < app.game.hitsOpponent.length; i++) {
+                    for(j = 0; j < app.game.hitsOpponent[i].hits.length; j++ ){
+                     document.getElementById(app.game.hitsOpponent[i].hits[j] ).classList.add("printsunk");
+                    }
+             }
+        },
+
+
         clickSalvo: function (letra, numero){
             var slocation= letra + numero
-            var turno = app.game.salvos.filter(el => el.playerid == app.player.id).length + 1 
-
-             if(app.salvoParaPost.locations.length <= 4 && !app.game.salvos.some(z => z.locations.includes(slocation)) && !app.salvoParaPost.locations.includes( slocation)  ){
-
+            var turno = app.game.salvos.filter(el => el.playerid == app.player.id).length + 1
+            var salvosFilter =  app.game.salvos.filter(el => el.playerid == app.player.id)
+             if(app.salvoParaPost.locations.length <= 4 &&  !app.salvoParaPost.locations.includes(slocation) && !salvosFilter.some(x => x.Locations.includes(slocation)) )  {
                app.salvoParaPost.turno = turno 
                app.salvoParaPost.locations.push(slocation)
                document.getElementById(slocation + "s").classList.add("printSalvo"); 
-
             } else{
-
                   if(app.salvoParaPost.locations.length <= 5 && app.salvoParaPost.locations.includes(slocation)) {
                      app.salvoParaPost.locations.splice(app.salvoParaPost.locations.indexOf(slocation),1 )
-                     document.getElementById(slocation + "s").classList.remove("printSalvo")
-                 
+                     document.getElementById(slocation + "s").classList.remove("printSalvo")   
              }
-             
             }
         },
 
@@ -240,8 +287,13 @@ var app = new Vue({
             }
         }
         }
-      //
-    }
+    
+    },
+    mounted: function(){
+        this.obtenerGpId();
+        this.findGame();
+       
+
+    },
 })
-app.obtenerGpId();
-app.findGame();
+

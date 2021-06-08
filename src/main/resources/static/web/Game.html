@@ -55,9 +55,14 @@
 
                 </table>
             </div>
-            <div>                    
+            <div v-if="game.gameStatus == 'PLACE_SALVOS'">                    
                 <button v-on:click="enviaSalvos()"  type="button" class="btn btn-secondary btn-sm">Send Salvos</button>
+               
            </div>
+           <div v-if= "game.gameStatus == 'WAIT_OPPONENT'"> <p>Espera un oponente</p></div>
+          
+
+           
         </div>
                  
 
